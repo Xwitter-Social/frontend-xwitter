@@ -559,7 +559,11 @@ export default function UserProfilePage() {
                   </div>
                 </div>
 
-                {!isCurrentUserProfile ? (
+                {isCurrentUserProfile ? (
+                  <Button asChild variant="outline" className="md:self-start">
+                    <Link href="/settings">Editar perfil</Link>
+                  </Button>
+                ) : (
                   <div className="flex flex-col gap-2 md:flex-row md:self-start">
                     <Button
                       variant="outline"
@@ -585,7 +589,7 @@ export default function UserProfilePage() {
                       }}
                     />
                   </div>
-                ) : null}
+                )}
               </div>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">

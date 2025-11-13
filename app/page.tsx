@@ -20,21 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { signIn, signUp } from '@/lib/auth-client';
-
-const passwordRequirements = [
-  { id: 'length', text: 'Pelo menos 8 caracteres', regex: /.{8,}/ },
-  { id: 'uppercase', text: 'Uma letra maiúscula', regex: /[A-Z]/ },
-  { id: 'lowercase', text: 'Uma letra minúscula', regex: /[a-z]/ },
-  { id: 'number', text: 'Um número', regex: /\d/ },
-  { id: 'symbol', text: 'Um símbolo', regex: /[!@#$%^&*(),.?\":{}|<>]/ },
-];
-
-function getPasswordValidation(password: string) {
-  return passwordRequirements.map((req) => ({
-    ...req,
-    isValid: req.regex.test(password),
-  }));
-}
+import { getPasswordValidation } from '@/lib/password';
 
 export default function AuthPage() {
   const router = useRouter();

@@ -55,3 +55,12 @@ export async function signUp(payload: SignUpPayload): Promise<void> {
 
   await handleResponse(response);
 }
+
+export async function signOut(): Promise<void> {
+  const response = await fetch('/api/auth/signout', {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  await handleResponse(response);
+}
