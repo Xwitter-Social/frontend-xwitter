@@ -53,6 +53,12 @@ frontend-twitter/
 
 ---
 
+## 📋 Quadro Kanban
+
+[Acesse o Quadro Kanban para acompanhar o desenvolvimento histórias de usuário.](https://github.com/orgs/Xwitter-Social/projects/2)
+
+---
+
 ## ✅ Pré-requisitos
 
 Certifique-se de ter instalado em sua máquina:
