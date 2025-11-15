@@ -21,6 +21,7 @@ import {
   useProfileFollowing,
   useProfilePosts,
   useProfileReposts,
+  useProfileLikes,
 } from '@/hooks/use-profile';
 import {
   deletePost,
@@ -31,12 +32,16 @@ import {
 } from '@/lib/post-client';
 import { startConversation } from '@/lib/conversation-client';
 import { formatRelativeTime, getInitials } from '@/lib/utils';
-import type { RepostTimelinePost, TimelinePost } from '@/types/post';
+import type {
+  LikedTimelinePost,
+  RepostTimelinePost,
+  TimelinePost,
+} from '@/types/post';
 import type { RelationshipUser } from '@/types/profile';
 
 type RelationListType = 'followers' | 'following' | null;
 
-type PostsTab = 'posts' | 'reposts';
+type PostsTab = 'posts' | 'reposts' | 'likes';
 
 const numberFormatter = new Intl.NumberFormat('pt-BR');
 
@@ -181,6 +186,62 @@ function renderRepostsSection(
   );
 }
 
+function renderLikesSection(
+  likes: LikedTimelinePost[],
+  isLoading: boolean,
+  error: Error | undefined,
+  emptyMessage: string,
+  options: {
+    onDelete?: (postId: string) => Promise<void> | void;
+    onToggleLike?: (post: TimelinePost) => Promise<void>;
+    onToggleRepost?: (post: TimelinePost) => Promise<void>;
+  } = {},
+) {
+  const { onDelete, onToggleLike, onToggleRepost } = options;
+
+  if (isLoading) {
+    return renderPostsSkeleton();
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+        {error.message}
+      </div>
+    );
+  }
+
+  if (likes.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
+        {emptyMessage}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {likes.map((like) => (
+        <div key={`${like.id}-${like.likedAt}`} className="space-y-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>Curtido {formatRelativeTime(like.likedAt)}</span>
+            <span aria-hidden>·</span>
+            <Link href={`/post/${like.id}`} className="hover:underline">
+              Ver detalhes
+            </Link>
+          </div>
+          <PostCard
+            post={like}
+            onDelete={onDelete}
+            onToggleLike={onToggleLike}
+            onToggleRepost={onToggleRepost}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function UserProfilePage() {
   const params = useParams<{ identifier: string }>();
   const identifier = params?.identifier ?? '';
@@ -213,6 +274,13 @@ export default function UserProfilePage() {
     error: repostsError,
     mutate: mutateReposts,
   } = useProfileReposts(profileId, { enabled: Boolean(profileId) });
+
+  const {
+    likes,
+    isLoading: isLikesLoading,
+    error: likesError,
+    mutate: mutateLikes,
+  } = useProfileLikes(profileId, { enabled: Boolean(profileId) });
 
   const {
     followers,
@@ -319,6 +387,12 @@ export default function UserProfilePage() {
         { revalidate: false },
       );
 
+      await mutateLikes(
+        (currentLikes) =>
+          currentLikes?.filter((like) => like.id !== postId) ?? currentLikes,
+        { revalidate: false },
+      );
+
       toast({ description: message });
     } catch (error) {
       const message =
@@ -331,60 +405,101 @@ export default function UserProfilePage() {
   };
 
   const handleToggleLike = async (targetPost: TimelinePost) => {
+    const wasLiked = targetPost.isLiked;
+    const likeDelta = wasLiked ? -1 : 1;
+
     try {
-      if (targetPost.isLiked) {
+      if (wasLiked) {
         await unlikePost(targetPost.id);
-        await mutatePosts(
-          (currentPosts) =>
-            currentPosts?.map((post) =>
-              post.id === targetPost.id
-                ? {
-                    ...post,
-                    isLiked: false,
-                    likeCount: Math.max(0, post.likeCount - 1),
-                  }
-                : post,
-            ) ?? currentPosts,
-          { revalidate: false },
-        );
-        await mutateReposts(
-          (currentReposts) =>
-            currentReposts?.map((repost) =>
-              repost.id === targetPost.id
-                ? {
-                    ...repost,
-                    isLiked: false,
-                    likeCount: Math.max(0, repost.likeCount - 1),
-                  }
-                : repost,
-            ) ?? currentReposts,
-          { revalidate: false },
-        );
       } else {
         await likePost(targetPost.id);
-        await mutatePosts(
-          (currentPosts) =>
-            currentPosts?.map((post) =>
-              post.id === targetPost.id
-                ? { ...post, isLiked: true, likeCount: post.likeCount + 1 }
-                : post,
-            ) ?? currentPosts,
-          { revalidate: false },
-        );
-        await mutateReposts(
-          (currentReposts) =>
-            currentReposts?.map((repost) =>
-              repost.id === targetPost.id
-                ? {
-                    ...repost,
-                    isLiked: true,
-                    likeCount: repost.likeCount + 1,
-                  }
-                : repost,
-            ) ?? currentReposts,
-          { revalidate: false },
-        );
       }
+
+      await mutatePosts(
+        (currentPosts) =>
+          currentPosts?.map((post) =>
+            post.id === targetPost.id
+              ? {
+                  ...post,
+                  isLiked: !wasLiked,
+                  likeCount: Math.max(0, post.likeCount + likeDelta),
+                }
+              : post,
+          ) ?? currentPosts,
+        { revalidate: false },
+      );
+
+      await mutateReposts(
+        (currentReposts) =>
+          currentReposts?.map((repost) =>
+            repost.id === targetPost.id
+              ? {
+                  ...repost,
+                  isLiked: !wasLiked,
+                  likeCount: Math.max(0, repost.likeCount + likeDelta),
+                }
+              : repost,
+          ) ?? currentReposts,
+        { revalidate: false },
+      );
+
+      await mutateLikes(
+        (currentLikes) => {
+          const likedAtTimestamp = new Date().toISOString();
+
+          if (!currentLikes) {
+            if (wasLiked || !isCurrentUserProfile) {
+              return currentLikes;
+            }
+
+            const newLike: LikedTimelinePost = {
+              ...targetPost,
+              isLiked: true,
+              likeCount: targetPost.likeCount + likeDelta,
+              likedAt: likedAtTimestamp,
+            };
+
+            return [newLike];
+          }
+
+          const exists = currentLikes.some((like) => like.id === targetPost.id);
+
+          const updatedLikes = currentLikes.map((like) =>
+            like.id === targetPost.id
+              ? {
+                  ...like,
+                  isLiked: !wasLiked,
+                  likeCount: Math.max(0, like.likeCount + likeDelta),
+                  likedAt: wasLiked ? like.likedAt : likedAtTimestamp,
+                }
+              : like,
+          );
+
+          if (wasLiked) {
+            return isCurrentUserProfile
+              ? updatedLikes.filter((like) => like.id !== targetPost.id)
+              : updatedLikes;
+          }
+
+          if (exists) {
+            return updatedLikes;
+          }
+
+          if (!isCurrentUserProfile) {
+            return currentLikes;
+          }
+
+          const newLike: LikedTimelinePost = {
+            ...targetPost,
+            isLiked: true,
+            likeCount: targetPost.likeCount + likeDelta,
+            likedAt: likedAtTimestamp,
+          };
+
+          return [newLike, ...currentLikes];
+        },
+        { revalidate: false },
+      );
     } catch (error) {
       const message =
         error instanceof Error
@@ -623,9 +738,10 @@ export default function UserProfilePage() {
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as PostsTab)}
           >
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="posts">Posts</TabsTrigger>
               <TabsTrigger value="reposts">Reposts</TabsTrigger>
+              <TabsTrigger value="likes">Curtidas</TabsTrigger>
             </TabsList>
             <TabsContent value="posts" className="mt-6 space-y-4">
               {renderPostsSection(
@@ -647,6 +763,21 @@ export default function UserProfilePage() {
                 reposts,
                 isRepostsLoading,
                 repostsError as Error | undefined,
+                {
+                  onDelete: handleDeletePost,
+                  onToggleLike: handleToggleLike,
+                  onToggleRepost: handleToggleRepost,
+                },
+              )}
+            </TabsContent>
+            <TabsContent value="likes" className="mt-6 space-y-4">
+              {renderLikesSection(
+                likes,
+                isLikesLoading,
+                likesError as Error | undefined,
+                isCurrentUserProfile
+                  ? 'Você ainda não curtiu nenhum post.'
+                  : 'Este usuário ainda não curtiu nenhum post.',
                 {
                   onDelete: handleDeletePost,
                   onToggleLike: handleToggleLike,

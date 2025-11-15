@@ -32,3 +32,7 @@ export interface PostDetails extends TimelinePost {
 export interface RepostTimelinePost extends TimelinePost {
   repostedAt: string;
 }
+
+export interface LikedTimelinePost extends TimelinePost {
+  likedAt: string;
+}

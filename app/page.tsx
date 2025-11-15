@@ -146,7 +146,7 @@ export default function AuthPage() {
                     <Input
                       id="identifier"
                       type="text"
-                      placeholder="seu@email.com ou @usuario"
+                      placeholder="email ou usuário"
                       value={loginIdentifier}
                       onChange={(event) =>
                         setLoginIdentifier(event.target.value)

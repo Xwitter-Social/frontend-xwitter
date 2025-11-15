@@ -1,7 +1,11 @@
 import useSWR from 'swr';
 
 import type { RelationshipUser, UserProfilePayload } from '@/types/profile';
-import type { RepostTimelinePost, TimelinePost } from '@/types/post';
+import type {
+  LikedTimelinePost,
+  RepostTimelinePost,
+  TimelinePost,
+} from '@/types/post';
 
 function extractMessage(source: unknown, fallback: string): string {
   if (!source) {
@@ -71,6 +75,16 @@ function isRepostsResponse(
     !!data &&
     typeof data === 'object' &&
     Array.isArray((data as { reposts?: unknown }).reposts)
+  );
+}
+
+function isLikesResponse(
+  data: unknown,
+): data is { likes: LikedTimelinePost[] } {
+  return (
+    !!data &&
+    typeof data === 'object' &&
+    Array.isArray((data as { likes?: unknown }).likes)
   );
 }
 
@@ -313,6 +327,63 @@ export function useProfileReposts(
 
   return {
     reposts: data ?? [],
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+async function fetchLikes(url: string): Promise<LikedTimelinePost[]> {
+  const response = await fetch(url, {
+    credentials: 'include',
+    cache: 'no-store',
+  });
+
+  const data = (await response.json().catch(() => null)) as unknown;
+
+  if (response.status === 401) {
+    const message = extractMessage(
+      data,
+      'Sessão expirada. Faça login novamente.',
+    );
+    const error = new Error(message);
+    error.name = 'UnauthorizedError';
+    throw error;
+  }
+
+  if (!response.ok) {
+    const message = extractMessage(
+      data,
+      'Não foi possível carregar as curtidas do usuário.',
+    );
+    throw new Error(message);
+  }
+
+  if (isLikesResponse(data)) {
+    return data.likes;
+  }
+
+  return [];
+}
+
+export function useProfileLikes(
+  userId: string | null | undefined,
+  options: { enabled?: boolean } = {},
+) {
+  const { enabled = true } = options;
+  const swrKey = userId && enabled ? `/api/users/${userId}/likes` : null;
+
+  const { data, error, isLoading, mutate } = useSWR<LikedTimelinePost[]>(
+    swrKey,
+    fetchLikes,
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+    },
+  );
+
+  return {
+    likes: data ?? [],
     isLoading,
     error,
     mutate,

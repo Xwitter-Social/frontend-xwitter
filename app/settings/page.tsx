@@ -398,7 +398,7 @@ export default function SettingsPage() {
                           name="username"
                           value={formState.username}
                           onChange={handleInputChange}
-                          placeholder="@seuusername"
+                          placeholder="nome de usuário"
                           required
                         />
                       </div>
@@ -411,7 +411,7 @@ export default function SettingsPage() {
                           type="email"
                           value={formState.email}
                           onChange={handleInputChange}
-                          placeholder="seu@email.com"
+                          placeholder="email"
                           required
                         />
                       </div>
