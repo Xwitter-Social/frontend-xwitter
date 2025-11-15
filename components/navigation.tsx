@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, MessageCircle, Search, Settings, User } from 'lucide-react';
@@ -28,7 +29,17 @@ export function Navigation({ user }: NavigationProps) {
     <nav className="fixed left-0 top-0 hidden h-full w-64 border-r border-border bg-card p-4 md:block">
       <div className="space-y-6">
         <div className="px-3">
-          <h1 className="text-2xl font-bold text-primary">Xwitter</h1>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/logo-sem-nome-branca.png"
+              alt="Xwitter"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+              priority
+            />
+            <h1 className="text-2xl font-bold text-white">Xwitter</h1>
+          </div>
         </div>
 
         <div className="space-y-2">

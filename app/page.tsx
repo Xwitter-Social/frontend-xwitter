@@ -2,6 +2,7 @@
 
 import type React from 'react';
 
+import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
@@ -115,8 +116,18 @@ export default function AuthPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">Xwitter</h1>
-          <p className="text-muted-foreground">Conecte-se com o mundo</p>
+          <Image
+            src="/logo-sem-nome-branca.png"
+            alt="Xwitter"
+            width={88}
+            height={88}
+            className="mx-auto mb-4 h-16 w-16"
+            priority
+          />
+          <h1 className="text-3xl font-bold text-white mb-2">Xwitter</h1>
+          <p className="text-muted-foreground text-primary">
+            Conecte-se com o mundo
+          </p>
         </div>
 
         <Tabs
