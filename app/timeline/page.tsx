@@ -217,7 +217,11 @@ export default function TimelinePage() {
             <div className="space-y-4">
               {posts.map((post) => (
                 <PostCard
-                  key={post.id}
+                  key={
+                    post.repostedBy
+                      ? `${post.id}-repost-${post.repostedBy.id}`
+                      : post.id
+                  }
                   post={post}
                   onToggleLike={(timelinePost) =>
                     handleToggleLike(timelinePost)

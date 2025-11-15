@@ -48,6 +48,13 @@ export function PostCard({
     () => formatRelativeTime(post.createdAt),
     [post.createdAt],
   );
+  const repostTimestampLabel = useMemo(() => {
+    if (!post.repostedAt) {
+      return null;
+    }
+
+    return formatRelativeTime(post.repostedAt);
+  }, [post.repostedAt]);
 
   const isLongContent = post.content.length > MAX_PREVIEW_LENGTH;
   const displayContent =
@@ -184,6 +191,24 @@ export function PostCard({
   return (
     <Card className="transition-colors hover:bg-card/80">
       <CardContent className="pt-6">
+        {post.repostedBy ? (
+          <div className="flex items-center gap-2 pb-3 pl-14 text-sm text-muted-foreground">
+            <Repeat2 className="h-4 w-4" />
+            <Link
+              href={`/profile/${post.repostedBy.username}`}
+              className="font-semibold text-foreground hover:underline"
+            >
+              {post.repostedBy.name}
+            </Link>
+            <span>repostou</span>
+            {repostTimestampLabel ? (
+              <>
+                <span aria-hidden>·</span>
+                <span>{repostTimestampLabel}</span>
+              </>
+            ) : null}
+          </div>
+        ) : null}
         <div className="flex gap-3">
           <Link href={`/profile/${post.author.username}`}>
             <Avatar className="cursor-pointer">

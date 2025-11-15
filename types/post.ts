@@ -15,6 +15,8 @@ export interface TimelinePost {
   isReposted: boolean;
   repostId: string | null;
   canDelete: boolean;
+  repostedAt: string | null;
+  repostedBy: PostAuthor | null;
 }
 
 export interface CommentNode {

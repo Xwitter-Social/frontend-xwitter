@@ -146,7 +146,7 @@ export default function AuthPage() {
                     <Input
                       id="identifier"
                       type="text"
-                      placeholder="email ou usuário"
+                      placeholder="Email ou Usuário"
                       value={loginIdentifier}
                       onChange={(event) =>
                         setLoginIdentifier(event.target.value)
@@ -210,7 +210,7 @@ export default function AuthPage() {
                     <Input
                       id="name"
                       type="text"
-                      placeholder="João Silva"
+                      placeholder="Nome"
                       value={signupName}
                       onChange={(event) => setSignupName(event.target.value)}
                       required
@@ -221,7 +221,7 @@ export default function AuthPage() {
                     <Input
                       id="username"
                       type="text"
-                      placeholder="@joaosilva"
+                      placeholder="Usuário"
                       value={signupUsername}
                       onChange={(event) =>
                         setSignupUsername(event.target.value)
@@ -234,7 +234,7 @@ export default function AuthPage() {
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder="joao@email.com"
+                      placeholder="Email"
                       value={signupEmail}
                       onChange={(event) => setSignupEmail(event.target.value)}
                       required
