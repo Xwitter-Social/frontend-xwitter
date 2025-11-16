@@ -4,6 +4,8 @@
 
 # 🐦 Xwitter - Frontend
 
+> 🌐 **Versão em produção:** https://xwitter-social.vercel.app/ — crie sua conta e comece a interagir!
+
 Interface web do Xwitter, construída com **Next.js 16** e **React 19** para entregar uma experiência rica, responsiva e acessível. O frontend consome a API do backend Xwitter, disponível em [Xwitter-Social/backend-xwitter](https://github.com/Xwitter-Social/backend-xwitter), e implementa as principais interações de uma rede social moderna: timeline em tempo real, curtidas, reposts, comentários, mensagens privadas, busca e gerenciamento de perfil.
 
 > 🔗 **Backend**: https://github.com/Xwitter-Social/backend-xwitter
@@ -196,12 +198,21 @@ npm run build
 - Garanta que `npm run lint` e `npm run build` estão passando.
 - Explique no PR o contexto da mudança e passos para validar.
 
-### ✅ Integração Contínua
+### ✅ Integração Contínua (CI)
 
-Pull requests direcionados à branch `main` disparam o workflow [`frontend-ci`](.github/workflows/frontend-ci.yml). O pipeline executa:
+Pull requests direcionados à branch `main` disparam o workflow [`frontend-ci`](.github/workflows/frontend-ci.yml), que executa:
 
-- `npm run lint` para validar o código;
+- `npm run lint` para validar estilo e padrões;
 - `npm run build` para garantir que a aplicação compila.
 
-> 💡 O pipeline é obrigatório para merges na `main`. Execute os scripts localmente antes de abrir o PR e acompanhe os checks no GitHub.
+> 💡 O pipeline é obrigatório para merges na `main`. Execute os scripts localmente antes de abrir o PR.
 
+### 🚀 Deploy Contínuo (CD)
+
+A branch `main` está integrada à Vercel (`xwitter-social.vercel.app`). Sempre que um PR é aprovado e mergeado:
+
+- A Vercel dispara automaticamente um deploy da aplicação;
+- A variável `BACKEND_API_URL` aponta para o backend publicado no Render;
+- Releases anteriores ficam disponíveis para rollback via painel da Vercel.
+
+> ℹ️ Para pré-visualizações, PRs criados abrem Deploy Previews na Vercel com URLs temporárias.
