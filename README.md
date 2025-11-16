@@ -4,6 +4,8 @@
 
 # 🐦 Xwitter - Frontend
 
+> 🌐 **Versão em produção:** https://xwitter-social.vercel.app/ — crie sua conta e comece a interagir!
+
 Interface web do Xwitter, construída com **Next.js 16** e **React 19** para entregar uma experiência rica, responsiva e acessível. O frontend consome a API do backend Xwitter, disponível em [Xwitter-Social/backend-xwitter](https://github.com/Xwitter-Social/backend-xwitter), e implementa as principais interações de uma rede social moderna: timeline em tempo real, curtidas, reposts, comentários, mensagens privadas, busca e gerenciamento de perfil.
 
 > 🔗 **Backend**: https://github.com/Xwitter-Social/backend-xwitter
@@ -196,12 +198,19 @@ npm run build
 - Garanta que `npm run lint` e `npm run build` estão passando.
 - Explique no PR o contexto da mudança e passos para validar.
 
-### ✅ Integração Contínua
+### ✅ Integração Contínua (CI)
 
-Pull requests direcionados à branch `main` disparam o workflow [`frontend-ci`](.github/workflows/frontend-ci.yml). O pipeline executa:
+Pull requests direcionados à branch `main` disparam o workflow [`frontend-ci`](.github/workflows/frontend-ci.yml), que executa:
 
-- `npm run lint` para validar o código;
+- `npm run lint` para validar estilo e padrões;
 - `npm run build` para garantir que a aplicação compila.
 
-> 💡 O pipeline é obrigatório para merges na `main`. Execute os scripts localmente antes de abrir o PR e acompanhe os checks no GitHub.
+> 💡 O pipeline é obrigatório para merges na `main`. Execute os scripts localmente antes de abrir o PR.
 
+### 🚀 Deploy Contínuo (CD)
+
+- **Ambiente de produção** (`main`): integrado à Vercel em https://xwitter-social.vercel.app/. Merge aprovado na `main` gera deploy automático; `BACKEND_API_URL` aponta para o backend na Render.
+- **Ambiente de desenvolvimento** (`develop`): deploy automático em https://frontend-xwitter-git-develop-rafaels-projects-af9daeff.vercel.app/. A Vercel cria e atualiza esse ambiente sempre que a `develop` é atualizada.
+- **Pull Requests**: ao abrir um PR de `develop` para `main`, a Vercel valida o deploy de desenvolvimento como parte dos checks e gera Preview Deploys adicionais para revisão visual.
+
+> ℹ️ Releases anteriores podem ser restauradas via painel da Vercel.
