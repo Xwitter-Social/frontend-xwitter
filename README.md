@@ -209,10 +209,8 @@ Pull requests direcionados à branch `main` disparam o workflow [`frontend-ci`](
 
 ### 🚀 Deploy Contínuo (CD)
 
-A branch `main` está integrada à Vercel (`xwitter-social.vercel.app`). Sempre que um PR é aprovado e mergeado:
+- **Ambiente de produção** (`main`): integrado à Vercel em https://xwitter-social.vercel.app/. Merge aprovado na `main` gera deploy automático; `BACKEND_API_URL` aponta para o backend na Render.
+- **Ambiente de desenvolvimento** (`develop`): deploy automático em https://frontend-xwitter-git-develop-rafaels-projects-af9daeff.vercel.app/. A Vercel cria e atualiza esse ambiente sempre que a `develop` é atualizada.
+- **Pull Requests**: ao abrir um PR de `develop` para `main`, a Vercel valida o deploy de desenvolvimento como parte dos checks e gera Preview Deploys adicionais para revisão visual.
 
-- A Vercel dispara automaticamente um deploy da aplicação;
-- A variável `BACKEND_API_URL` aponta para o backend publicado no Render;
-- Releases anteriores ficam disponíveis para rollback via painel da Vercel.
-
-> ℹ️ Para pré-visualizações, PRs criados abrem Deploy Previews na Vercel com URLs temporárias.
+> ℹ️ Releases anteriores podem ser restauradas via painel da Vercel.
