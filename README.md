@@ -142,6 +142,13 @@ Os testes utilizam `cy.request` para criar seeds e limpar dados diretamente na A
 
 ## 🤝 Guia de Contribuição
 
+### 🚦 Política de Branches
+
+- Mantenha a branch `develop` atualizada localmente (`git checkout develop && git pull`).
+- Crie branches de trabalho a partir de `develop` usando prefixos descritivos (`feature/`, `fix/`, `chore/`...).
+- Abra pull requests de `develop` para `main`. PRs direcionados à `main` exigem pelo menos uma aprovação antes do merge.
+- Evite commits diretos em `main`.
+
 ### 1. Fluxo Básico
 
 ```bash
@@ -188,3 +195,13 @@ npm run build
 - Atualize a documentação (README, comentários) quando necessário.
 - Garanta que `npm run lint` e `npm run build` estão passando.
 - Explique no PR o contexto da mudança e passos para validar.
+
+### ✅ Integração Contínua
+
+Pull requests direcionados à branch `main` disparam o workflow [`frontend-ci`](.github/workflows/frontend-ci.yml). O pipeline executa:
+
+- `npm run lint` para validar o código;
+- `npm run build` para garantir que a aplicação compila.
+
+> 💡 O pipeline é obrigatório para merges na `main`. Execute os scripts localmente antes de abrir o PR e acompanhe os checks no GitHub.
+
