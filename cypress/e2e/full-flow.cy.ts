@@ -25,7 +25,7 @@ interface BackendUser {
 }
 
 const AUTH_COOKIE_NAME = 'xwitter.auth-token';
-const STEP_DELAY = 600;
+const STEP_DELAY = 1200;
 
 const pause = () => cy.wait(STEP_DELAY);
 
@@ -219,7 +219,7 @@ it('realiza o fluxo social completo com curtidas, reposts e exclusão de conta',
   );
 
   cy.contains('button', 'Seguir').filter(':visible').click();
-  cy.contains('button', 'Seguindo', { timeout: 10000 })
+  cy.contains('button', 'Parar de seguir', { timeout: 10000 })
     .filter(':visible')
     .should('exist');
   pause();
