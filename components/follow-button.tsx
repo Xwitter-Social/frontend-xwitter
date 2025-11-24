@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { followUser, unfollowUser } from '@/lib/profile-client';
 
@@ -63,17 +64,22 @@ export function FollowButton({
   return (
     <Button
       size={size}
-      variant={currentFollowing ? 'secondary' : 'default'}
+      variant={currentFollowing ? 'outline' : 'default'}
       disabled={isLoading || disabled}
       onClick={() => void handleToggle()}
-      className={className}
+      className={cn(
+        currentFollowing
+          ? 'border-destructive !text-destructive hover:border-destructive hover:bg-destructive/10 hover:!text-destructive focus-visible:ring-destructive/30 dark:hover:bg-destructive/20'
+          : undefined,
+        className,
+      )}
     >
       {isLoading
         ? currentFollowing
           ? 'Atualizando...'
           : 'Atualizando...'
         : currentFollowing
-          ? 'Seguindo'
+          ? 'Parar de seguir'
           : 'Seguir'}
     </Button>
   );
